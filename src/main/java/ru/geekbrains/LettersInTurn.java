@@ -1,12 +1,12 @@
 package ru.geekbrains;
 
-public class App {
+public class LettersInTurn {
     private String currentLetter = "A";
 
     public synchronized void printCurrentLetter(String printLetter, String nextPrintLetter) {
         try {
             for (int i = 0; i < 5; i++) {
-                while (currentLetter != printLetter) {
+                while (!currentLetter.equals(printLetter)) {
                     wait();
                 }
                 System.out.print(currentLetter);
@@ -25,25 +25,10 @@ public class App {
 
     public static void main(String[] args) {
 
-        App a = new App();
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                a.printCurrentLetter("A", "B");
-            }
-        }).start();
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                a.printCurrentLetter("B", "C");
-            }
-        }).start();
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                a.printCurrentLetter("C", "A");
-            }
-        }).start();
+        LettersInTurn a = new LettersInTurn();
+        new Thread(() -> a.printCurrentLetter("A", "B")).start();
+        new Thread(() -> a.printCurrentLetter("B", "C")).start();
+        new Thread(() -> a.printCurrentLetter("C", "A")).start();
 
 
     }
