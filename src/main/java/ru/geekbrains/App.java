@@ -1,20 +1,21 @@
 package ru.geekbrains;
 
 public class App {
-    private String currentLetter;
+    private String currentLetter = "A";
 
     public synchronized void printCurrentLetter(String printLetter, String nextPrintLetter) {
-        for (int i = 0; i < 5; i++) {
-            while (currentLetter != printLetter) {
-                try {
+        try {
+            for (int i = 0; i < 5; i++) {
+                while (currentLetter != printLetter) {
                     wait();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
                 }
+                System.out.print(currentLetter);
+                setCurrentLetter(nextPrintLetter);
+                notifyAll();
+
             }
-            System.out.println(currentLetter);
-            setCurrentLetter(nextPrintLetter);
-            notifyAll();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
     }
 
@@ -31,7 +32,18 @@ public class App {
                 a.printCurrentLetter("A", "B");
             }
         }).start();
-
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                a.printCurrentLetter("B", "C");
+            }
+        }).start();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                a.printCurrentLetter("C", "A");
+            }
+        }).start();
 
 
     }
